@@ -1,18 +1,17 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="Input.fs" />
+    <Compile Include="Output.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
-
   <ItemGroup>
+    <PackageReference Include="Fantomas" Version="2.9.2" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.3.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.3.0" />
+    <PackageReference Include="Microsoft.FSharp.Compiler" Version="10.4.3-beta.19224.1" />
   </ItemGroup>
-
 </Project>

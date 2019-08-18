@@ -20,7 +20,11 @@ namespace TopLevel
         using Microsoft.Win32;
         using System.Runtime.InteropServices;
  
-        class Foo { }
+        class Foo {
+            public string Hi() {
+                return "Hi!";
+            }
+        }
     }
  
     namespace Child2
@@ -35,4 +39,5 @@ namespace TopLevel
 [<EntryPoint>]
 let main argv =
     printf "output is:\n%s" (Input.parse ExProgram)
+    Output.astTest() |> ignore
     0 // return an integer exit code
