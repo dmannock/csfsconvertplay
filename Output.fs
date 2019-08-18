@@ -16,7 +16,94 @@ type EnumTest =
     | First = 1
 """
 
-let makeIdent name = Ident(name, range.Zero)
+[<AutoOpen>]
+module AstBuilders =
+    let makeIdent name = Ident(name, range.Zero)
+
+    let createdParsedFile modules =
+        let parsedImplFile = 
+            ParsedImplFileInput(
+                (*fileName*) 
+                "tmp.fsx",
+                (*isScript*) 
+                false,
+                (*qualifiedNameOfFile*) 
+                QualifiedNameOfFile(makeIdent "tmpfile"),
+                (*scopedPragmas: ScopedPragma list*) 
+                List.Empty,
+                (*hashDirectives : ParsedHashDirective list*) 
+                List.Empty, 
+                (*modules : SynModuleOrNamespace list*) 
+                modules, 
+                ((* isLastCompiland  bool*) true, (* isExe  bool*) true)
+        )    
+        parsedImplFile |> ParsedInput.ImplFile
+
+    let createModule name types =
+        SynModuleOrNamespace(
+            (*longId:LongIdent *) 
+            [makeIdent name],
+            (* isRecursive:bool *) 
+            false,
+            (* isModule:bool *) 
+            true,
+            (* decls:SynModuleDecls *)  
+            types,
+            (* xmlDoc:PreXmlDoc *) 
+            PreXmlDoc.Empty,
+            (* attribs:SynAttributes *) 
+            SynAttributes.Empty,
+            (* accessibility:SynAccess option *) 
+            None,
+            (* range:range *)
+            range.Zero
+        )
+
+    let createComponentInfo name =
+        ComponentInfo(
+            (* SynAttributes *) 
+            SynAttributes.Empty,
+            (* SynTyparDecl list *) 
+            List.empty,
+            (* SynTypeConstraint list *) 
+            List.empty,
+            (* LongIdent *) 
+            [makeIdent name],
+            (* PreXmlDoc *) 
+            PreXmlDoc.Empty, 
+            (* PreferPostfix *) 
+            false,
+            (* SynAccess option *) 
+            None,
+            (* range *) 
+            range.Zero
+        )
+
+    let createTypeDef componentInfo repr = 
+        TypeDefn(
+            (* SynComponentInfo *) 
+            componentInfo,
+            (* SynTypeDefnRepr *) 
+            repr,
+            (* SynMemberDefns *) 
+            List.empty,
+            (* range *) 
+            range.Zero
+    )
+
+    let createEnumCase name value = 
+        EnumCase(
+            (* SynAttributes *) 
+            SynAttributes.Empty,
+            (* ident:Ident *) 
+            makeIdent name,
+            (* SynConst *) 
+            (SynConst.Int32 value),
+            (* PreXmlDoc *) 
+            PreXmlDoc.Empty,
+            (* range:range *) 
+            range.Zero
+    )
 
 let ExFsharpAst = 
     let memberFlags : MemberFlags = {
@@ -53,25 +140,6 @@ let ExFsharpAst =
             (* SequencePointInfoForBinding *) 
             SequencePointInfoForBinding.NoSequencePointAtInvisibleBinding
     )
-    let componentInfo: SynComponentInfo = 
-        ComponentInfo(
-            (* SynAttributes *) 
-            SynAttributes.Empty,
-            (* SynTyparDecl list *) 
-            List.empty,
-            (* SynTypeConstraint list *) 
-            List.empty,
-            (* LongIdent *) 
-            [makeIdent "Foo"],
-            (* PreXmlDoc *) 
-            PreXmlDoc.Empty, 
-            (* PreferPostfix *) 
-            false,
-            (* SynAccess option *) 
-            None,
-            (* range *) 
-            range.Zero
-    )
     let members: SynMemberDefns = [
         SynMemberDefn.ImplicitCtor(None, SynAttributes.Empty, [], None, range.Zero)
         SynMemberDefn.Member(binding, range.Zero)
@@ -85,100 +153,17 @@ let ExFsharpAst =
             (* range *) 
             range.Zero
     )
-    let syncType: SynTypeDefn = 
-        TypeDefn(
-            (* SynComponentInfo *) 
-            componentInfo,
-            (* SynTypeDefnRepr *) 
-            repr,
-            (* SynMemberDefns *) 
-            List.empty,
-            (* range *) 
-            range.Zero
-    )
-    let modules = 
-        SynModuleOrNamespace(
-            (*longId:LongIdent *) 
-            [makeIdent "TopLevel"], //name
-            (* isRecursive:bool *) 
-            false,
-            (* isModule:bool *) 
-            true,
-            (* decls:SynModuleDecls *)  
-            [SynModuleDecl.Types([syncType], range.Zero)],
-            (* xmlDoc:PreXmlDoc *) 
-            PreXmlDoc.Empty,
-            (* attribs:SynAttributes *) 
-            SynAttributes.Empty,
-            (* accessibility:SynAccess option *) 
-            None,
-            (* range:range *)
-            range.Zero
-    )
-    let parsedImplFile = 
-        ParsedImplFileInput(
-            (*fileName*) 
-            "tmp.fsx",
-            (*isScript*) 
-            false,
-            (*qualifiedNameOfFile*) 
-            QualifiedNameOfFile(makeIdent "TopLevel"),
-            (*scopedPragmas: ScopedPragma list*) 
-            List.Empty,
-            (*hashDirectives : ParsedHashDirective list*) 
-            List.Empty, 
-            (*modules : SynModuleOrNamespace list*) 
-            [modules], 
-            ((* isLastCompiland  bool*) true, (* isExe  bool*) true)
-    )    
-    parsedImplFile |> ParsedInput.ImplFile
+    let componentInfo: SynComponentInfo = createComponentInfo "Foo"
+    let synType: SynTypeDefn = createTypeDef componentInfo repr
+    let types = [SynModuleDecl.Types([synType], range.Zero)]
+    let modules = [createModule "TopLevel" types]  
+    createdParsedFile modules  
 
 let ExFsharpEnumAst = 
-    let componentInfo: SynComponentInfo = 
-        ComponentInfo(
-            (* SynAttributes *) 
-            SynAttributes.Empty,
-            (* SynTyparDecl list *) 
-            List.empty,
-            (* SynTypeConstraint list *) 
-            List.empty,
-            (* LongIdent *) 
-            [makeIdent "EnumTest"],
-            (* PreXmlDoc *) 
-            PreXmlDoc.Empty, 
-            (* PreferPostfix *) 
-            false,
-            (* SynAccess option *) 
-            None,
-            (* range *) 
-            range.Zero
-    )
     let enumCases:SynEnumCase list = 
         [
-            EnumCase(
-                (* SynAttributes *) 
-                SynAttributes.Empty,
-                (* ident:Ident *) 
-                makeIdent "None",
-                (* SynConst *) 
-                (SynConst.Int32 0),
-                (* PreXmlDoc *) 
-                PreXmlDoc.Empty,
-                (* range:range *) 
-                range.Zero
-            )
-            EnumCase(
-                (* SynAttributes *) 
-                SynAttributes.Empty,
-                (* ident:Ident *) 
-                makeIdent "First",
-                (* SynConst *) 
-                (SynConst.Int32 1),
-                (* PreXmlDoc *) 
-                PreXmlDoc.Empty,
-                (* range:range *) 
-                range.Zero
-            )
+            createEnumCase "None" 0
+            createEnumCase "First" 1
         ]
     let theEnum: SynTypeDefnSimpleRepr = 
         SynTypeDefnSimpleRepr.Enum(
@@ -187,55 +172,12 @@ let ExFsharpEnumAst =
             (* range *) 
             range.Zero
     )
-    let repr: SynTypeDefnRepr = 
-        SynTypeDefnRepr.Simple(theEnum, range.Zero)
-    let syncType: SynTypeDefn = 
-        TypeDefn(
-            (* SynComponentInfo *) 
-            componentInfo,
-            (* SynTypeDefnRepr *) 
-            repr,
-            (* SynMemberDefns *) 
-            List.empty,
-            (* range *) 
-            range.Zero
-    )
-    let modules = 
-        SynModuleOrNamespace(
-            (*longId:LongIdent *) 
-            [makeIdent "TopLevel"], //name
-            (* isRecursive:bool *) 
-            false,
-            (* isModule:bool *) 
-            true,
-            (* decls:SynModuleDecls *)  
-            [SynModuleDecl.Types([syncType], range.Zero)],
-            (* xmlDoc:PreXmlDoc *) 
-            PreXmlDoc.Empty,
-            (* attribs:SynAttributes *) 
-            SynAttributes.Empty,
-            (* accessibility:SynAccess option *) 
-            None,
-            (* range:range *)
-            range.Zero
-    )
-    let parsedImplFile = 
-        ParsedImplFileInput(
-            (*fileName*) 
-            "tmp.fsx",
-            (*isScript*) 
-            false,
-            (*qualifiedNameOfFile*) 
-            QualifiedNameOfFile(makeIdent "TopLevel"),
-            (*scopedPragmas: ScopedPragma list*) 
-            List.Empty,
-            (*hashDirectives : ParsedHashDirective list*) 
-            List.Empty, 
-            (*modules : SynModuleOrNamespace list*) 
-            [modules], 
-            ((* isLastCompiland  bool*) true, (* isExe  bool*) true)
-    )    
-    parsedImplFile |> ParsedInput.ImplFile
+    let repr: SynTypeDefnRepr = SynTypeDefnRepr.Simple(theEnum, range.Zero)
+    let componentInfo = createComponentInfo "EnumTest"
+    let synType: SynTypeDefn = createTypeDef componentInfo repr
+    let types = [SynModuleDecl.Types([synType], range.Zero)]
+    let modules = [createModule "TopLevel" types]  
+    createdParsedFile modules
 
 let astTest() =
     let noOriginalSourceCode = "//"
