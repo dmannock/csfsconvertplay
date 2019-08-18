@@ -127,21 +127,7 @@ let myAst =
     parsedImplFile |> ParsedInput.ImplFile
 
 let astTest() =
-    // let isFsi = false
-    // let astFromString = CodeFormatter.parse isFsi ExFsharp
-    // let formatContext: Fantomas.CodeFormatterImpl.FormatContext = {
-    //     FileName = "tmp.fsx"
-    //     Source = ""
-    //     ProjectOptions = Microsoft.FSharp.Compiler.SourceCodeServices.FSharpParsingOptions.Default
-    //     Checker = Microsoft.FSharp.Compiler.SourceCodeServices.FSharpChecker.Create()
-    // }
-    // let myHandCraftedAst = CodeFormatter.formatAST myAst formatContext FormatConfig.FormatConfig.Default
     let noOriginalSourceCode = "//"
     let config = { FormatConfig.FormatConfig.Default with StrictMode = true }
     let myHandCraftedAst = CodeFormatter.FormatAST(myAst, noOriginalSourceCode, None, config)
-    ""
-
-
-
-
-
+    myHandCraftedAst

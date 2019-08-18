@@ -38,6 +38,6 @@ namespace TopLevel
 
 [<EntryPoint>]
 let main argv =
-    printf "output is:\n%s" (Input.parse ExProgram)
-    Output.astTest() |> ignore
+    printf "c# input to ast is:\n%s" (Input.parse ExProgram)
+    printf "ast output to f#:\n%s" (Output.astTest())
     0 // return an integer exit code
