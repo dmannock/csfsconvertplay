@@ -38,6 +38,10 @@ namespace TopLevel
 
 [<EntryPoint>]
 let main argv =
-    printf "c# input to ast is:\n%s" (Input.parse ExProgram)
-    printf "ast output to f#:\n%s" (Output.astTest())
+    let csharpRoot = (Input.parse ExProgram)
+    // namespace with class, method & return type
+    let fsharpAst = Output.ExFsharpAst
+    // enum ast example
+    // let fsharpAst = Output.ExFsharpEnumAst
+    printf "ast output to f#:\n%s" (Output.astTest fsharpAst)
     0 // return an integer exit code

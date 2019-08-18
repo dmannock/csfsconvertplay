@@ -21,4 +21,5 @@ let parse (str: string) =
     let usings = String.Join('\n', collector.Usings)
     let namespaces = String.Join('\n', collector.Namespaces)
     let output = sprintf "Usings:%s\nNamespaces:%s\n" usings namespaces
-    output
+    printf "c# input to ast is:\n%s" output
+    root

@@ -179,11 +179,8 @@ let ExFsharpEnumAst =
     let modules = [createModule "TopLevel" types]  
     createdParsedFile modules
 
-let astTest() =
+let astTest ast =
     let noOriginalSourceCode = "//"
     let config = { FormatConfig.FormatConfig.Default with StrictMode = true }
-    // namespace with class, method & return type
-    // let myHandCraftedAst = CodeFormatter.FormatAST(ExFsharpAst, noOriginalSourceCode, None, config)
-    // enum ast example
-    let myHandCraftedAst = CodeFormatter.FormatAST(ExFsharpEnumAst, noOriginalSourceCode, None, config)
-    myHandCraftedAst
+    let fsharpCode = CodeFormatter.FormatAST(ast, noOriginalSourceCode, None, config)
+    fsharpCode
