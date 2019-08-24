@@ -6,6 +6,7 @@
   <ItemGroup>
     <Compile Include="Input.fs" />
     <Compile Include="Output.fs" />
+    <Compile Include="Converter.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

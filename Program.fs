@@ -1,8 +1,4 @@
-﻿// Learn more about F# at http://fsharp.org
-
-open System
-
-[<Literal>]
+﻿[<Literal>]
 let ExProgram = """using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,10 +34,15 @@ namespace TopLevel
 
 [<EntryPoint>]
 let main argv =
-    let csharpRoot = (Input.parse ExProgram)
+    // 1. c# parsing -> ast
+    //maybe better root option when casted to CSharpSyntaxNode
+    let root = (Input.parse ExProgram) 
+    // 2. Convereter c# ast -> (intermediate) -> f# ast
+    // quick play about in converter.fs, not ready to be hooked up
+    // 3. f# ast -> fsharp code
     // namespace with class, method & return type
     let fsharpAst = Output.ExFsharpAst
     // enum ast example
     // let fsharpAst = Output.ExFsharpEnumAst
     printf "ast output to f#:\n%s" (Output.astTest fsharpAst)
-    0 // return an integer exit code
+    0
